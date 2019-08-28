@@ -1,4 +1,5 @@
 # student-manage
+这是一款管理学生的App，重点分析学生的成绩，关注重点学生
 
 ## Project setup
 ```
