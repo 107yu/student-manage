@@ -1,10 +1,11 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
+// import Home from './views/Home.vue'
+import  {getCookie}  from "./utils/index"
 
 Vue.use(Router)
 
-export default new Router({
+let router = new Router({
   routes: [
     {
       path: '/',
@@ -15,43 +16,49 @@ export default new Router({
     {
       path: '/login',
       name: 'login',
-     
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import(/* webpackChunkName: "about" */ './views/Login.vue')
     },
     {
       path: '/show',
       name: 'show',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/Show.vue')
+      component: () => import(/* webpackChunkName: "about" */ './views/Show.vue'),
+      meta: { requiresAuth: true }
     },
     {
       path: '/grade',
       name: 'grade',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/Grade.vue')
+      component: () => import(/* webpackChunkName: "about" */ './views/Grade.vue'),
+      meta: { requiresAuth: true }
     },
     {
       path: '/rector',
       name: 'rector',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/Rector.vue')
+      component: () => import(/* webpackChunkName: "about" */ './views/Rector.vue'),
+      meta: { requiresAuth: true }
     },
     {
       path: '/charts',
       name: 'charts',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/Charts.vue')
+      component: () => import(/* webpackChunkName: "about" */ './views/Charts.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    
+    if (!getCookie()) {
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      })
+    } else {
+      next()
+    }
+  } else {
+    next() // 确保一定要调用 next()
+  }
+})
+
+export default  router

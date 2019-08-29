@@ -1,13 +1,7 @@
 <template>
     <div class="show">
         <HeaderTitle title="重点关注学生考试成绩统计图"></HeaderTitle>
-        <div class="class">
-            <span>切换班级：</span>
-            <ul>
-                <li v-for="(item,index) in className" :key="index">{{item}}</li>
-            </ul>
-            <p>创建班级</p>
-        </div>
+        <AddClass></AddClass>
         <div class="addStudent">
             <span>添加学生</span>
             <input type="text" placeholder="输入血红色呢个姓名">
@@ -20,8 +14,7 @@
             <span>添加成绩</span>
             <span>添加解析方案</span>
         </div>
-        <!-- <DrawColumnar></DrawColumnar> -->
-        <div class="add">
+        <!-- <div class="add">
             <div class="addGrade">
                 <h6>添加新成绩---XXX同学</h6>
                 <div class="block">
@@ -56,21 +49,22 @@
                     <b class="addShow">确定</b>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 <script>
-
-export default {
+import {mapState,mapMutations,mapActions} from "vuex"
+import Vue from "vue"
+import AddClass from "../components/addClass"
+export default Vue.extend({
     props:{
-
     },
     components:{
-
+        AddClass,
     },
     data(){
         return {
-            className:["1703C","1703E","1703F"],
+            className:[],
             pickerOptions: {
                 shortcuts: [{
                     text: '今天',
@@ -95,103 +89,43 @@ export default {
                 },
             value1: '',
             value2: '',
+            ind: 0,
+            
         }
     },
     computed:{
 
     },
     methods:{
+        ...mapActions({
+            getClassList : "user/getClassList",
+            sendCreateClass : "user/sendCreateClass"
+        }),
+        changeClass(index){
+            this.ind = index
+        },
+        createClass(){
+            this.dialogVisible = true;
+            //   this.sendCreateClass({
+            //     type:"create",
+            //     classname:"",
+            //     classroom:"",
+            //     assistant:""
+            //   })
+        },
       
     },
     created(){
 
     },
-    mounted(){
-       
+    async mounted(){
+       let res = await this.getClassList()
+       if(res.code === 1){
+           this.className = res.lists
+       }
     }
-}
+})
 </script>
 <style scoped lang="scss">
-.show{
-    width: 100%;
-    height: 100%;
-}
-.class{
-    display: flex;
-    padding: 20px;
-    border:1px solid #aaa;
-    margin:20px;
-    ul{
-        display: flex;
-        li{
-            padding: 10px 20px;
-            border:1px solid skyblue;
-            background: skyblue;
-            color:blue;
-            margin:0 10px;
-        }
-    }
-    p{
-        padding: 10px 20px;
-        border:1px solid #aaa;
-        margin:0 10px; 
-    }
-}
-.addStudent{
-    margin:20px;
-    padding: 10px;
-    input{
-        margin: 0 10px;
-        height: 30px;
-        padding-left:10px;
-    }
-}
-.resolve{
-    margin:20px;
-    padding: 10px;
-    display: flex;
-    span{
-        padding: 10px 20px;
-    }
-}
-.add{
-    display: flex;
-    padding: 20px 100px;
-    justify-content:center;
-}
-.add>div{
-    border:1px solid #aaa;
-    padding:20px;
-    margin:0 100px;
-}
-.add input{
-    height: 30px;
-    padding-left: 10px;
-}
-.add>div>div{
-    margin:20px 0;
-    display: flex;
-}
-.addGrade  span,.addAnalysis span{
-    display: inline-block;
-    width: 100px;
-    text-align: center;
-    height: 40px;
-    line-height: 40px;
-}
-.handle{
-   float:right;
-    
-}
-.handle b{
-    padding: 5px 10px;
-    border:1px solid #aaa;
-    margin:0 10px;
-    font-weight: 500;
-}
-.handle .addShow{
-    background: skyblue;
-    color: #fff;
-    border:0;
-}
+@import "../scss/show.scss"
 </style>

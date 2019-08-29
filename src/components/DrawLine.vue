@@ -1,5 +1,5 @@
 <template>
-     <div id="line" :style="{width:'90%',height:'400px'}"></div>
+     <div id="line" :style="{width:'100%',height:'400px'}"></div>
 </template>
 <script>
 export default {
@@ -103,5 +103,7 @@ export default {
 }
 </script>
 <style scoped lang="scss">
-
+#line{
+    padding: 20px;
+}
 </style>

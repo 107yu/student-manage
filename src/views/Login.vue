@@ -4,12 +4,8 @@
         <div class="center">
             <h2>网站工程</h2>
             <div class="nav">
-                <span 
-                    v-for="(item,index) in title" 
-                    :key="index"
-                    @click="change(index)"
-                    :class="{show:index===ind}"
-                    >{{item}}</span>
+                <span @click="change('登录')" :class="{show:submitVal === '登录'}">登录</span>
+                <span @click="change('注册')" :class="{show:submitVal === '注册'}">注册</span>
             </div>
             <div>
                 <input type="text" placeholder="用户名" v-model="username">
@@ -20,8 +16,8 @@
             <div v-if="submitVal==='注册'">
                 <input type="text" placeholder="请输入手机号(可选择)" v-model="tel">
             </div>
-            <div class="checkbox">
-                <input type="checkbox">
+            <div class="checkbox"  v-if="submitVal==='登录'">
+                <input type="checkbox" v-model="checked" @click="choose">
                 <span>两周内免登录</span>
             </div>
             <div>
@@ -33,15 +29,16 @@
 <script>
 import Vue from "vue"
 import {mapState,mapMutations,mapActions} from "vuex"
+import {getCookie} from "../utils/index"
 export default Vue.extend({
     data(){
         return {
-            title:["登录","注册"],
-            ind:1,
             tel:"",
             pwd:"",
             username:"",
-            submitVal:"注册"
+            submitVal:"登录",  //提交上的文字  是登录还是注册？
+            validlength:"",  //过期时间
+            checked: false,
         }
     },
     computed:{
@@ -50,41 +47,57 @@ export default Vue.extend({
     methods:{
         ...mapActions({
             sendRegister : "login/sendRegister",
-            sendLogin : "login/sendLogin"
+            sendLogin : "login/sendLogin",
+            checkUserLogin : "login/checkUserLogin"
         }),
-        change(index){
-            if(index === 0){
-                this.submitVal = "登入"
-            } else {
-                this.submitVal = "注册"
-            }
-            this.ind = index
+        change(val){  //切换注册与登录
+            this.submitVal = val
         },
-        submit(){
+        async submit(){
             //注册
             if(!this.username) return;
             if(!this.pwd) return ;
             if(this.submitVal === "注册"){
-                this.sendRegister({
+                let res = await this.sendRegister({
                     username:this.username,
                     password:this.pwd,
                     phone:this.tel
                 })
-            }else if(this.submitVal === "登入"){
-                this.sendLogin({
-                    username:this.username,
-                    password:this.pwd,
-                    validlength:""
+                if(res.code === 1){
+                    this.submitVal = "登录"
+                }else{
+                    alert("用户名重复")
+                }
+            }else if(this.submitVal === "登录"){
+                let res = await this.sendLogin({
+                    username: this.username,
+                    password: this.pwd,
+                    validlength: this.checked?(24*14).toString() : ""
                 })
+                if(res.code === 1){
+                    let res = await this.checkUserLogin()
+                    if(res.code === 1){
+                        // localStorage.setItem("userInfo",JSON.stringify(res.useinfo))
+                        this.$router.push({path:'/show'});
+                    }
+                    
+                }else{
+                    alert("用户名输入错误")
+                }
             }
             
+        },
+        choose(){
+            this.checked = !this.checked
         }
     },
     created(){
-
+        if(getCookie()){
+            this.$router.push({path:'/show'});
+        }
     },
     mounted(){  
-
+        
     }
 })
 </script>
