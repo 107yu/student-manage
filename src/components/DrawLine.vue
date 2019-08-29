@@ -2,20 +2,30 @@
      <div class="line" :style="{width:'90%',height:'400px'}" ref="line"></div>
 </template>
 <script>
+import { mapActions,mapMutations,mapState } from 'vuex';
 export default {
-    props:["student"],
+    props:["student","cid"],
     components:{
 
     },
     data(){
         return {
-
+            gradeList:{},
+            dates:[],
+            skill:[],
+            theory:[],
         }
     },
     computed:{
-
+        //  ...mapState({
+        //     gradeList: state=>state.user.gradeList
+        // })
     },
     methods:{
+        ...mapActions({
+            getGradeList: "user/getGradeList"
+        }),
+        // GradeList[stu_name]
         drawLine(){
              // 基于准备好的dom，初始化echarts实例
             let line = this.$echarts.init(this.$refs.line)
@@ -46,7 +56,7 @@ export default {
                     {
                         type : 'category',
                         boundaryGap : false,
-                        data : ['08-01','08-02','08-03','08-04','08-05','08-06','08-07','08-08','08-09','08-10','08-11','08-12','08-13',]
+                        data :this.dates
                     }
                 ],
                 yAxis : [
@@ -60,7 +70,7 @@ export default {
                     {
                         name:'技能',
                         type:'line',
-                        data:[90, 87,89,90,80,94,98,93,89,87,87,89,94],
+                        data:this.skill,
                         markPoint : {
                             data : [
                                 {type : 'max', name: '最大值'},
@@ -76,7 +86,7 @@ export default {
                     {
                         name:'理论',
                         type:'line',
-                        data:[60,20,40,30,80,70,60,20,40,30,80,70,90],
+                        data:this.theory,
                         markPoint : {
                             data : [
                                 {name : '周最低', value : 0, xAxis: 1, yAxis: 1}
@@ -95,8 +105,23 @@ export default {
     created(){
 
     },
-    mounted(){
-        this.drawLine();
+    async mounted(){
+        let res= await this.getGradeList({
+            cid: this.cid
+        })
+        if(res.code ===1){
+            this.gradeList = res.lists;
+            // console.log("!111", res.lists[this.student.stu_name])
+            res.lists[this.student.stu_name]&& res.lists[this.student.stu_name].forEach((item,index)=>{
+                this.dates.push(item.record_date)
+                this.skill.push(item.skill_score)
+                this.theory.push(item.theory_score)
+            })
+            // console.log('this.dates',this.dates)
+            // console.log('this.skill',this.skill)
+            // console.log('this.theory',this.theory)
+            this.drawLine(); 
+        }
     }
 }
 </script>

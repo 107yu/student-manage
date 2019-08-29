@@ -37,7 +37,7 @@ export let studentList = (params:any)=>{
 
 //给某一学生添加成绩
 export let addGrade = (code:any)=>{
-  return request.put('/student/addrecord',{code});
+  return request.put('/student/addrecord',code);
 }
 
 //获取成绩列表

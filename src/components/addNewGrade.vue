@@ -1,6 +1,6 @@
 <template> 
     <div class="addGrade">
-        <h6>添加新成绩---XXX同学</h6>
+        <h6>添加新成绩---{{student.stu_name}}同学</h6>
         <div class="block">
             <el-date-picker
             v-model="value1"
@@ -9,8 +9,14 @@
             </el-date-picker>
             <span class="demonstration">昨天</span>
         </div>
-        <div><span>技能：</span><input type="number" min="0" max="100" placeholder="数字"></div>
-        <div><span>理论：</span><input type="number" min="0" max="100" placeholder="0-100之间的数字"></div>
+        <div><span>技能：</span><input type="number" min="0" max="100" placeholder="数字" v-model="skill"></div>
+        <div><span>理论：</span><input type="number" min="0" max="100" placeholder="0-100之间的数字" v-model="theory"></div>
+        <div><span>分析与解决方案：</span><textarea name="" id="" cols="40" rows="5" v-model="analysis"></textarea></div>
+        <!-- <div><span>解决方案：</span><textarea name="" id="" cols="40" rows="5" v-model="resolve"></textarea></div> -->
+        <div class="day">
+            <span @click="changeDay('日考')" :class="{show: day==='日考'}">日考</span>
+            <span @click="changeDay('周考')" :class="{show: day==='周考'}">周考</span>
+        </div>
         <div class="handle">
             <b @click="handle">取消</b>
             <b class="addShow" @click="handle('cancle')">确定</b>
@@ -19,6 +25,7 @@
 </template>
 <script>
 import Vue from "vue"
+import {mapState,mapMutations,mapActions} from "vuex"
 export default Vue.extend({
     props:["status","seen","student"],
     components:{
@@ -26,6 +33,11 @@ export default Vue.extend({
     },
     data(){
         return {
+            value1: '',
+            skill:"",
+            theory:"",
+            day:"",
+            analysis:"",
             pickerOptions: {
                 shortcuts: [{
                     text: '今天',
@@ -48,18 +60,49 @@ export default Vue.extend({
                     }
                 }]
                 },
-            value1: '',
         }
     },
     computed:{
 
     },
     methods:{
-        handle(type){
-            if(type === 'cancle'){
-
+        ...mapActions({
+            sendAddGrade: "user/sendAddGrade"
+        }),
+        changeDay(type){
+            this.day = type;
+        },
+        async handle(type){  
+            if(type === 'cancle'){   //点击确定时
+                if(!this.value1) return 
+                if(!this.skill) return
+                if(!this.theory) return
+                if(!this.day) return 
+                if(!this.analysis) return
+                //转时间 yyyy-mmmm-dddd
+                var times = new Date(this.value1);
+                var month =(times.getMonth() + 1 )<10?'0'+(times.getMonth() + 1 ):(times.getMonth() + 1 )
+                var myday =times.getDate()<10?'0'+times.getDate():times.getDate()
+                var datetime=times.getFullYear() + '-' + month+ '-' + myday
+                var record = this.day === "日考"?"0":"1"
+                let res = await this.sendAddGrade({
+                    record_date:datetime,
+                    stuid:this.student.stuid,
+                    skill_score:this.skill,
+                    theory_score:this.theory,
+                    analysis:this.analysis,
+                    week_record	:record,
+                })
+                this.$message({
+                    message:res.msg,
+                    type: 'success'
+                });
+               
+                this.$emit("handle",false)
             }
-            this.$emit("handle",false)
+            else{
+                this.$emit("handle",false)
+            }
         }
     },
     created(){

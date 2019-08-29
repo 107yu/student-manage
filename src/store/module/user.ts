@@ -1,8 +1,9 @@
-import {classList,createClass,createStudent,studentList,gradeList} from "@/service"
+import {classList,createClass,createStudent,studentList,gradeList,addGrade} from "@/service"
 // import {setToken,getToken} from "../../utils/index"
 const state = {
     className: [],
     studentLists:[],  //某班级重点学生名单
+    gradeList:[]  //某班级成绩列表
 }
 
 const mutations = {
@@ -11,6 +12,9 @@ const mutations = {
     },
     studentList(state:any,payload:any){
         state.studentLists = payload.lists
+    },
+    studentGradeList(state:any,payload:any){
+        state.gradeList = payload.lists
     }
 }
 
@@ -42,14 +46,19 @@ const actions = {
         }
         return data
     },
+    async sendAddGrade(context:any,payload:any){  //添加成绩
+        let data = await addGrade(payload)
+        console.log("添加成绩",data)
+        return data
+    },
     async getGradeList(context:any,payload:any){  //获取成绩列表
         let data = await gradeList(payload)
         console.log("某成绩列表",data)
-        // if(data.code === 1){
-        //     let {commit} = context
-        //     commit ("studentList",data)
+        if(data.code === 1){
+            let {commit} = context
+            commit ("studentGradeList",data)
             
-        // }
+        }
         return data
     },
 }

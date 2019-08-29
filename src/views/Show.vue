@@ -15,13 +15,13 @@
                     v-for="(item,index) in studentLists"
                     :key="index"
                 >
-                    <DrawLine :student="item"></DrawLine>
+                    <DrawLine :student="item" :cid="cid"></DrawLine>
                     <div class="resolve">
                         <div>
                             <span @click="addgrade(item)">添加成绩+</span>
-                            <span @click="addAnaly(item)">添加解析方案+</span>
+                            <!-- <span @click="addAnaly(item)">添加解析方案+</span> -->
                         </div>
-                        <span>查看和编辑该生所有的成绩</span>
+                        <span @click="allGrades(item)">查看和编辑该生所有的成绩</span>
                     </div>
                 </div>
             </div>
@@ -69,29 +69,39 @@ export default Vue.extend({
             addStudentGrade:false,
             addStudentAnaly:false,
             seen:false,
-            student:{}  //添加某一学生的成绩和分析，
+            student:{},  //添加某一学生的成绩和分析，
+            gradeList:{}
         }
     },
     computed:{
-
+        ...mapState({
+            // gradeList: state=>state.user.gradeList
+        })
     },
     methods:{
         ...mapActions({
             getClassList : "user/getClassList",
             sendCreateClass : "user/sendCreateClass",
             sendCreateStudent : "user/sendCreateStudent",
-            getStudentList : "user/getStudentList"
+            getStudentList : "user/getStudentList",
+            getGradeList: "user/getGradeList"
         }),
         async studentInfo(info){  //子向父传递的参数
             this.cid = info.cid;
             this.instructor = info.teacher_name
-            console.log("classInfo",info)
             let res = await this.getStudentList({  //获取某一个班级的重点学生
                 cid: this.cid
             })
             if(res.code === 1){
                 this.studentLists = res.lists
             }
+            // let gradeRes = await this.getGradeList({
+            //     cid: this.cid
+            // })
+            // if(gradeRes.code ===1){
+            //     this.gradeList = gradeRes.lists
+            // }
+            // console.log('gradeRes',gradeRes.lists)
         },
         async appendStudent(){   //添加重点学生
             if(!this.cid) return 
@@ -119,6 +129,12 @@ export default Vue.extend({
                     this.num = "";
                     this.description	= "";
                 }
+                // let gradeRes = await this.getGradeList({
+                //     cid: this.cid
+                // })
+                // if(gradeRes.code ===1){
+                //     this.gradeList = gradeRes.lists
+                // }
             }else{
                 this.$message({
                     message: '添加学生失败，请重新填写信息',
@@ -140,6 +156,9 @@ export default Vue.extend({
             this.seen = flag;
             this.addStudentGrade = flag;
             this.addStudentAnaly = flag;
+        },
+        allGrades(item){ //查看该生所有的成绩
+            this.$router.push({path:"/grade",query:item})
         }
       
     },

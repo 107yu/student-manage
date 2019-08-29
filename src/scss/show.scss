@@ -104,3 +104,18 @@
         border:1px solid #ccc;
     }
 }
+.day{
+    display: flex;
+    justify-content:center;
+    span{
+        margin:0 10px;
+        border:1px solid #aaa;
+    }
+    .show{
+        background: #f90;
+        color:#fff;
+    }
+}
+textarea{
+    padding: 10px;
+}
