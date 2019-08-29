@@ -1,18 +1,14 @@
 <template>
   <div id="app">
     <!-- <Header></Header> -->
-    <div class="main">
-      <div>
-        <router-view/>
-      </div>
-    </div>
+    <router-view/>
     <Sidebar></Sidebar>
   </div>
 </template>
 <script>
 import Header from "./components/Header"
 import Sidebar from "./components/Sidebar"
-import BScroll from "better-scroll"
+
 export default {
     data(){
         return {
@@ -33,9 +29,7 @@ export default {
 
     },
     mounted(){
-      this.$nextTick(()=>{
-        new BScroll(".main")
-      })
+     
     }
 }
 </script>

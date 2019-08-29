@@ -1,7 +1,7 @@
 <template>
     <div class="chart">
-        <div class="head">重点关注学生考试成绩统计图</div>
-    <div class="choose">
+      <HeaderTitle title="重点关注学生考试成绩统计图"></HeaderTitle>
+      <div class="choose">
         <div class="choose-left">选择班级：</div>
             <ul class="choose-right">
                 <li class="chooseActive">1703D</li>

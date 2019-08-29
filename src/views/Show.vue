@@ -2,103 +2,74 @@
     <div class="show">
         <HeaderTitle title="重点关注学生考试成绩统计图"></HeaderTitle>
         <AddClass @studentInfo='studentInfo'></AddClass>
-        <div class="addStudent">
-            <span>添加学生</span>
-            <input type="text" placeholder="输入学生的姓名" v-model="name">
-            <input type="number" placeholder="末位次数" v-model="num">
-            <input type="text" placeholder="结对子" v-model="description">
-            <span class="appendStudent" @click="appendStudent">添加</span>
+        <div class="content">
+            <div>
+                <div class="addStudent">
+                    <span>添加学生</span>
+                    <input type="text" placeholder="输入学生的姓名" v-model="name">
+                    <input type="number" placeholder="末位次数" v-model="num">
+                    <input type="text" placeholder="结对子" v-model="description">
+                    <span class="appendStudent" @click="appendStudent">添加</span>
+                </div>
+                <div 
+                    v-for="(item,index) in studentLists"
+                    :key="index"
+                >
+                    <DrawLine :student="item"></DrawLine>
+                    <div class="resolve">
+                        <div>
+                            <span @click="addgrade(item)">添加成绩+</span>
+                            <span @click="addAnaly(item)">添加解析方案+</span>
+                        </div>
+                        <span>查看和编辑该生所有的成绩</span>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div 
-            v-for="(item,index) in studentLists"
-            :key="index"
-        >
-            <DrawLine :student='item'></DrawLine>
-            <div class="resolve">
-                <span>添加成绩</span>
-                <span>添加解析方案</span>
-            </div>
+        <div class="add" v-show="seen">
+            <AddGrade 
+                v-show="addStudentGrade" 
+                :status="addStudentGrade" 
+                :seen="seen" 
+                :student="student"
+                @handle="handle"
+            ></AddGrade>
+            <AddAnalyze 
+                v-show="addStudentAnaly" 
+                :status="addStudentAnaly" 
+                :seen="seen" 
+                :student="student"
+            ></AddAnalyze>
         </div>
-        <!-- <div class="add">
-            <div class="addGrade">
-                <h6>添加新成绩---XXX同学</h6>
-                <div class="block">
-                    <el-date-picker
-                    v-model="value1"
-                    type="datetime"
-                    placeholder="默认当前日期">
-                    </el-date-picker>
-                    <span class="demonstration">昨天</span>
-                </div>
-                <div><span>技能：</span><input type="text" placeholder="数字"></div>
-                <div><span>理论：</span><input type="text" placeholder="0-100之间的数字"></div>
-                <div class="handle">
-                    <b>取消</b>
-                    <b class="addShow">确定</b>
-                </div>
-            </div>
-            <div class="addAnalysis">
-                <h6>添加分析---XXX同学</h6>
-                <div class="block">
-                    <el-date-picker
-                    v-model="value2"
-                    type="datetime"
-                    placeholder="默认当前日期">
-                    </el-date-picker>
-                    <span class="demonstration">昨天</span>
-                </div>
-                <div><span>分析：</span><textarea name="" id="" cols="40" rows="5"></textarea></div>
-                <div><span>解决方案：</span><textarea name="" id="" cols="40" rows="5"></textarea></div>
-                <div class="handle">
-                    <b>取消</b>
-                    <b class="addShow">确定</b>
-                </div>
-            </div>
-        </div> -->
     </div>
 </template>
 <script>
 import {mapState,mapMutations,mapActions} from "vuex"
 import Vue from "vue"
 import AddClass from "../components/addClass"
+import AddGrade from "../components/addNewGrade"
+import AddAnalyze from "../components/addAnalyze"
+import BScroll from "better-scroll"
 export default Vue.extend({
     props:{
     },
     components:{
         AddClass,
+        AddGrade,
+        AddAnalyze
     },
     data(){
         return {
-            pickerOptions: {
-                shortcuts: [{
-                    text: '今天',
-                    onClick(picker) {
-                    picker.$emit('pick', new Date());
-                    }
-                }, {
-                    text: '昨天',
-                    onClick(picker) {
-                    const date = new Date();
-                    date.setTime(date.getTime() - 3600 * 1000 * 24);
-                    picker.$emit('pick', date);
-                    }
-                }, {
-                    text: '一周前',
-                    onClick(picker) {
-                    const date = new Date();
-                    date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
-                    picker.$emit('pick', date);
-                    }
-                }]
-                },
-            value1: '',
-            value2: '',
             name: "",
             num: "",
             description: "",
             instructor:"",
             cid:"",//班级id
             studentLists:[],
+            addStudentGrade:false,
+            addStudentAnaly:false,
+            seen:false,
+            student:{}  //添加某一学生的成绩和分析，
         }
     },
     computed:{
@@ -138,12 +109,37 @@ export default Vue.extend({
                     message: '添加学生成功',
                     type: 'success'
                 });
+                let data = await this.getStudentList({  //获取某一个班级的重点学生
+                    cid: this.cid
+                })
+                if(data.code === 1){
+                    console.log("添加之后获取的学生列表",data.lists)
+                    this.studentLists = data.lists
+                    this.name = "";
+                    this.num = "";
+                    this.description	= "";
+                }
             }else{
                 this.$message({
                     message: '添加学生失败，请重新填写信息',
                     type: 'error'
                 });
             }
+        },
+        addgrade(item){   //点击添加成绩
+            this.addStudentGrade = true;
+            this.seen = true;
+            this.student = item
+        },
+        addAnaly(item){ //点击添加成绩分析
+            this.addStudentAnaly =true;
+            this.seen = true;
+            this.student = item
+        },
+        handle(flag){
+            this.seen = flag;
+            this.addStudentGrade = flag;
+            this.addStudentAnaly = flag;
         }
       
     },
@@ -151,7 +147,9 @@ export default Vue.extend({
 
     },
     mounted(){
-        
+        this.$nextTick(()=>{
+            new BScroll(".content")
+        })
     }
 })
 </script>

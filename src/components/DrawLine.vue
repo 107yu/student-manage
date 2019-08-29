@@ -1,5 +1,5 @@
 <template>
-     <div class="line" :style="{width:'100%',height:'400px'}"></div>
+     <div class="line" :style="{width:'90%',height:'400px'}" ref="line"></div>
 </template>
 <script>
 export default {
@@ -18,8 +18,7 @@ export default {
     methods:{
         drawLine(){
              // 基于准备好的dom，初始化echarts实例
-            let line = this.$echarts.init(document.querySelector('.line'))
-            console.log(this.student)
+            let line = this.$echarts.init(this.$refs.line)
             // 绘制图表
             line.setOption({
                  title : {
@@ -102,7 +101,7 @@ export default {
 }
 </script>
 <style scoped lang="scss">
-#line{
-    padding: 25px;
+.line{
+    padding: 20px;
 }
 </style>
