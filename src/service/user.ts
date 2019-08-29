@@ -29,3 +29,22 @@ export let createClass = (code:any)=>{
 export let createStudent = (code:any)=>{
   return request.put('/student/add',code);
 }
+
+//获取某一个班级的重点学生名单：student/lists
+export let studentList = (params:any)=>{
+  return request.get('/student/lists',{params});
+}
+
+//给某一学生添加成绩
+export let addGrade = (code:any)=>{
+  return request.put('/student/addrecord',{code});
+}
+
+//获取某一个班级的成绩列表
+export let gradeList = (params:any)=>{
+  return request.get('/student/recordlists',{params});
+}
+
+//修改成绩
+
+//用户列表

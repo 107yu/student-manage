@@ -9,10 +9,15 @@
             <input type="text" placeholder="结对子" v-model="description">
             <span class="appendStudent" @click="appendStudent">添加</span>
         </div>
-       <DrawLine></DrawLine>
-        <div class="resolve">
-            <span>添加成绩</span>
-            <span>添加解析方案</span>
+        <div 
+            v-for="(item,index) in studentLists"
+            :key="index"
+        >
+            <DrawLine></DrawLine>
+            <div class="resolve">
+                <span>添加成绩</span>
+                <span>添加解析方案</span>
+            </div>
         </div>
         <!-- <div class="add">
             <div class="addGrade">
@@ -93,6 +98,7 @@ export default Vue.extend({
             description: "",
             instructor:"",
             cid:"",//班级id
+            studentLists:[],
         }
     },
     computed:{
@@ -102,24 +108,42 @@ export default Vue.extend({
         ...mapActions({
             getClassList : "user/getClassList",
             sendCreateClass : "user/sendCreateClass",
-            sendCreateStudent : "user/sendCreateStudent"
+            sendCreateStudent : "user/sendCreateStudent",
+            getStudentList : "user/getStudentList"
         }),
-        studentInfo(info){  //子向父传递的参数
+        async studentInfo(info){  //子向父传递的参数
             this.cid = info.cid;
             this.instructor = info.teacher_name
-            console.log("cid",info)
+            console.log("classInfo",info)
+            let res = await this.getStudentList({  //获取某一个班级的重点学生
+                cid: this.cid
+            })
+            if(res.code === 1){
+                this.studentLists = res.lists
+            }
         },
-        appendStudent(){   //添加重点学生
+        async appendStudent(){   //添加重点学生
             if(!this.cid) return 
             if(!this.name) return 
-            if(!this.repetitions) return
-            this.sendCreateStudent({
+            if(!this.num) return
+            let res = await this.sendCreateStudent({
                 cid:this.cid,
                 stu_name:this.name,
-                repetitions:this.num*1,
+                repetitions:this.num,
                 description:this.description,	
                 instructor:this.instructor
             })
+            if(res.code === 1){
+                this.$message({
+                    message: '添加学生成功',
+                    type: 'success'
+                });
+            }else{
+                this.$message({
+                    message: '添加学生失败，请重新填写信息',
+                    type: 'error'
+                });
+            }
         }
       
     },

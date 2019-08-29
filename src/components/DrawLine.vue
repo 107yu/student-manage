@@ -1,5 +1,5 @@
 <template>
-     <div id="line" :style="{width:'100%',height:'400px'}"></div>
+     <div class="line" :style="{width:'100%',height:'400px'}"></div>
 </template>
 <script>
 export default {
@@ -20,7 +20,7 @@ export default {
     methods:{
         drawLine(){
              // 基于准备好的dom，初始化echarts实例
-            let line = this.$echarts.init(document.getElementById('line'))
+            let line = this.$echarts.init(document.querySelector('.line'))
             // 绘制图表
             line.setOption({
                  title : {
