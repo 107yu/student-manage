@@ -24,3 +24,8 @@ export let classList = ()=>{
 export let createClass = (code:any)=>{
   return request.put('/class/create',code);
 }
+
+//添加重点学生：
+export let createStudent = (code:any)=>{
+  return request.put('/student/add',code);
+}

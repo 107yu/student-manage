@@ -1,13 +1,13 @@
 <template>
     <div class="show">
         <HeaderTitle title="重点关注学生考试成绩统计图"></HeaderTitle>
-        <AddClass></AddClass>
+        <AddClass @studentInfo='studentInfo'></AddClass>
         <div class="addStudent">
             <span>添加学生</span>
-            <input type="text" placeholder="输入血红色呢个姓名">
-            <input type="number" placeholder="末位次数">
-            <input type="text" placeholder="结对子">
-            <span>添加</span>
+            <input type="text" placeholder="输入学生的姓名" v-model="name">
+            <input type="number" placeholder="末位次数" v-model="num">
+            <input type="text" placeholder="结对子" v-model="description">
+            <span class="appendStudent" @click="appendStudent">添加</span>
         </div>
        <DrawLine></DrawLine>
         <div class="resolve">
@@ -64,7 +64,6 @@ export default Vue.extend({
     },
     data(){
         return {
-            className:[],
             pickerOptions: {
                 shortcuts: [{
                     text: '今天',
@@ -89,8 +88,11 @@ export default Vue.extend({
                 },
             value1: '',
             value2: '',
-            ind: 0,
-            
+            name: "",
+            num: "",
+            description: "",
+            instructor:"",
+            cid:"",//班级id
         }
     },
     computed:{
@@ -99,30 +101,33 @@ export default Vue.extend({
     methods:{
         ...mapActions({
             getClassList : "user/getClassList",
-            sendCreateClass : "user/sendCreateClass"
+            sendCreateClass : "user/sendCreateClass",
+            sendCreateStudent : "user/sendCreateStudent"
         }),
-        changeClass(index){
-            this.ind = index
+        studentInfo(info){  //子向父传递的参数
+            this.cid = info.cid;
+            this.instructor = info.teacher_name
+            console.log("cid",info)
         },
-        createClass(){
-            this.dialogVisible = true;
-            //   this.sendCreateClass({
-            //     type:"create",
-            //     classname:"",
-            //     classroom:"",
-            //     assistant:""
-            //   })
-        },
+        appendStudent(){   //添加重点学生
+            if(!this.cid) return 
+            if(!this.name) return 
+            if(!this.repetitions) return
+            this.sendCreateStudent({
+                cid:this.cid,
+                stu_name:this.name,
+                repetitions:this.num*1,
+                description:this.description,	
+                instructor:this.instructor
+            })
+        }
       
     },
     created(){
 
     },
-    async mounted(){
-       let res = await this.getClassList()
-       if(res.code === 1){
-           this.className = res.lists
-       }
+    mounted(){
+        
     }
 })
 </script>
