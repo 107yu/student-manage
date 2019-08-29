@@ -104,6 +104,6 @@ export default {
 </script>
 <style scoped lang="scss">
 #line{
-    padding: 20px;
+    padding: 25px;
 }
 </style>

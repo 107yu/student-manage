@@ -101,5 +101,7 @@ export default {
 }
 </script>
 <style scoped lang="scss">
-
+    #columnar{
+        padding: 25px;
+    }
 </style>

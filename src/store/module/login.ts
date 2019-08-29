@@ -26,8 +26,6 @@ const actions = {
         let data = await checkUser()
         console.log("查询信息",data)
         return data
-       
-        
     }
 }
 export default {
