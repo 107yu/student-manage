@@ -3,9 +3,7 @@
 </template>
 <script>
 export default {
-    props:{
-
-    },
+    props:["student"],
     components:{
 
     },
@@ -21,10 +19,11 @@ export default {
         drawLine(){
              // 基于准备好的dom，初始化echarts实例
             let line = this.$echarts.init(document.querySelector('.line'))
+            console.log(this.student)
             // 绘制图表
             line.setOption({
                  title : {
-                    text: 'XXX同学日周考成绩统计图',
+                    text: this.student.stu_name+'同学日周考成绩统计图',
                     subtext: '纯属虚构'
                 },
                 tooltip : { //气泡提示框

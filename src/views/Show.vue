@@ -13,7 +13,7 @@
             v-for="(item,index) in studentLists"
             :key="index"
         >
-            <DrawLine></DrawLine>
+            <DrawLine :student='item'></DrawLine>
             <div class="resolve">
                 <span>添加成绩</span>
                 <span>添加解析方案</span>

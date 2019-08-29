@@ -46,6 +46,17 @@ let router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
+  // console.log(to.path)
+  // if(to.path ==="/login"){
+  //   if(getCookie()){
+  //     next({
+  //       path: '/show',
+  //     })
+  //   }
+  //   else {
+  //     next()
+  //   }
+  // }
   if (to.matched.some(record => record.meta.requiresAuth)) {
     
     if (!getCookie()) {
