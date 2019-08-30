@@ -4,28 +4,40 @@
 <script>
 import { mapActions,mapMutations,mapState } from 'vuex';
 export default {
-    props:["student","cid"],
+    props:["student","cid","grade"],
     components:{
 
     },
     data(){
         return {
-            gradeList:{},
             dates:[],
             skill:[],
             theory:[],
         }
     },
     computed:{
-        //  ...mapState({
-        //     gradeList: state=>state.user.gradeList
-        // })
+         ...mapState({
+            gradeList: state=>state.user.gradeList
+        })
     },
+    watch: {
+        grade(val, newval) {
+            // console.log("前面",val)
+            // console.log("后头",newval)
+            val && val.forEach((item,index)=>{
+                this.dates.push(item.record_date)
+                this.skill.push(item.skill_score)
+                this.theory.push(item.theory_score)
+            })
+            this.drawLine()
+        },
+        student(name){
+            this.dates = [];
+            this.skill = [];
+            this.theory = [];
+        }
+    },      
     methods:{
-        ...mapActions({
-            getGradeList: "user/getGradeList"
-        }),
-        // GradeList[stu_name]
         drawLine(){
              // 基于准备好的dom，初始化echarts实例
             let line = this.$echarts.init(this.$refs.line)
@@ -105,23 +117,25 @@ export default {
     created(){
 
     },
-    async mounted(){
-        let res= await this.getGradeList({
-            cid: this.cid
-        })
-        if(res.code ===1){
-            this.gradeList = res.lists;
-            // console.log("!111", res.lists[this.student.stu_name])
-            res.lists[this.student.stu_name]&& res.lists[this.student.stu_name].forEach((item,index)=>{
-                this.dates.push(item.record_date)
-                this.skill.push(item.skill_score)
-                this.theory.push(item.theory_score)
-            })
-            // console.log('this.dates',this.dates)
-            // console.log('this.skill',this.skill)
-            // console.log('this.theory',this.theory)
-            this.drawLine(); 
-        }
+    mounted(){
+         this.drawLine()
+        // console.log("grade",this.gradeList)
+        // let res= await this.getGradeList({
+        //     cid: this.cid
+        // })
+        // if(res.code ===1){
+        //     this.gradeList = res.lists;
+        //     // console.log("!111", res.lists[this.student.stu_name])
+        //     res.lists[this.student.stu_name]&& res.lists[this.student.stu_name].forEach((item,index)=>{
+        //         this.dates.push(item.record_date)
+        //         this.skill.push(item.skill_score)
+        //         this.theory.push(item.theory_score)
+        //     })
+        //     // console.log('this.dates',this.dates)
+        //     // console.log('this.skill',this.skill)
+        //     // console.log('this.theory',this.theory)
+        //     this.drawLine(); 
+        // }
     }
 }
 </script>

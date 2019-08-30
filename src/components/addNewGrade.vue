@@ -93,6 +93,11 @@ export default Vue.extend({
                     analysis:this.analysis,
                     week_record	:record,
                 })
+                this.value1 =  '';
+                this.skill = "";
+                this.theory = "";
+                this.day = "";
+                this.analysis = "";
                 this.$message({
                     message:res.msg,
                     type: 'success'
@@ -101,8 +106,14 @@ export default Vue.extend({
                 this.$emit("handle",false)
             }
             else{
+                this.value1 =  '';
+                this.skill = "";
+                this.theory = "";
+                this.day = "";
+                this.analysis = "";
                 this.$emit("handle",false)
             }
+            
         }
     },
     created(){

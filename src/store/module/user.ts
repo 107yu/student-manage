@@ -1,4 +1,4 @@
-import {classList,createClass,createStudent,studentList,gradeList,addGrade} from "@/service"
+import {classList,createClass,createStudent,studentList,gradeList,addGrade,modifyInfo} from "@/service"
 // import {setToken,getToken} from "../../utils/index"
 const state = {
     className: [],
@@ -61,6 +61,17 @@ const actions = {
         }
         return data
     },
+    async upDateInfo(context:any,payload:any){  //修改成绩
+        let data = await modifyInfo(payload)
+        console.log("修改成绩",data)
+        // if(data.code === 1){
+        //     let {commit} = context
+        //     commit ("studentGradeList",data)
+            
+        // }
+        return data
+    },
+
 }
 export default {
     namespaced:true,//命名空间--可以不写，默认true

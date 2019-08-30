@@ -1,6 +1,7 @@
 <template>
     <div class="headerTitle">
         {{title}}
+        <slot></slot>
     </div>
 </template>
 <script>

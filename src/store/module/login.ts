@@ -1,4 +1,4 @@
-import {login,register,checkUser} from "@/service"
+import {login,register,checkUser,userList} from "@/service"
 import {setCookie} from "../../utils/index"
 const state = {
    
@@ -22,11 +22,16 @@ const actions = {
         }
         return data
     },
-    async checkUserLogin(context:any){
+    async checkUserLogin(context:any){  //检测用户信息
         let data = await checkUser()
         console.log("查询信息",data)
         return data
-    }
+    },
+    async getUserList(context:any){  //检测用户信息
+        let data = await userList()
+        console.log("获取用户列表",data)
+        return data
+    },
 }
 export default {
     namespaced:true,//命名空间--可以不写，默认true

@@ -48,7 +48,8 @@ export default Vue.extend({
         ...mapActions({
             sendRegister : "login/sendRegister",
             sendLogin : "login/sendLogin",
-            checkUserLogin : "login/checkUserLogin"
+            checkUserLogin : "login/checkUserLogin",
+            getUserList: "login/getUserList"
         }),
         change(val){  //切换注册与登录
             this.submitVal = val
@@ -69,15 +70,16 @@ export default Vue.extend({
                     alert("用户名重复")
                 }
             }else if(this.submitVal === "登录"){
-                let res = await this.sendLogin({
+                let loginRes = await this.sendLogin({
                     username: this.username,
                     password: this.pwd,
                     validlength: this.checked?(24*14).toString() : ""
                 })
-                if(res.code === 1){
-                    let res = await this.checkUserLogin()
-                    if(res.code === 1){
-                        // localStorage.setItem("userInfo",JSON.stringify(res.useinfo))
+                if(loginRes.code === 1){
+                    let checkRes = await this.checkUserLogin()   
+                    let listRes = await this.getUserList()
+                    if(checkRes.code === 1){
+                        // localStorage.setItem("userInfo",JSON.stringify(checkRes.useinfo))
                         this.$router.push({path:'/show'});
                     }
                     

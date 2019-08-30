@@ -15,6 +15,11 @@ export let checkUser = ()=>{
   return request.get('/teacher/checkuser');
 }
 
+//获取用户列表：
+export let userList = ()=>{
+  return request.get('/teacher/userlist');
+}
+
 //班级列表：
 export let classList = ()=>{
   return request.get('/class/lists');
@@ -46,5 +51,6 @@ export let gradeList = (params:any)=>{
 }
 
 //修改成绩
-
-//用户列表
+export let modifyInfo = (params:any)=>{
+  return request.post('/student/modifyrecord',params);
+}

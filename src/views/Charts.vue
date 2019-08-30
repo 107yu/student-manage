@@ -22,6 +22,7 @@
                         v-for="(item,index) in studentLists"
                         :key="index"
                         class="noColor"
+                        @click="chooseStudent(item)"
                     >
                         {{item.stu_name}}
                     </li>
@@ -29,7 +30,7 @@
                 </ul>
             </div>
         </div>
-        <DrawLine />
+        <DrawLine  :student="student"  :grade="gradeList[student.stu_name]"/>
         <div class="method">
             <div class="method-left">
                 <p>2019-08-30</p>
@@ -54,27 +55,44 @@ export default Vue.extend({
         return {
             ind: 0,
             student:{},
+            gradeList:{},
+            studentLists:[],
+            cid:'',
         }
     },
     computed:{
         ...mapState({
             className : state => state.user.className,
-            studentLists : state => state.user.studentLists
+            // studentLists : state => state.user.studentLists,
         })
     },
     methods:{
         ...mapActions({
             getClassList : "user/getClassList",
             getStudentList : "user/getStudentList",
-            getGradeList : "user/getGradeList"
+            getGradeList : "user/getGradeList",
+            getGradeList: "user/getGradeList",
         }),
-       changeClass(index,item){   //切换班级
+       async changeClass(index,item){   //切换班级
             this.ind = index
             this.student = this.className[index]
-            this.getStudentList({  //获取某一个班级的重点学生
+            this.cid = item.cid;
+            let listRes = await this.getStudentList({  //获取某一个班级的重点学生
                 cid: item.cid
             })
+            if(listRes.code === 1){
+                this.studentLists = listRes.lists
+            }
+            let gradeRes = await this.getGradeList({  //获取班级的成绩列表
+                cid: this.cid
+            })
+            if(gradeRes.code ===1){
+                this.gradeList = gradeRes.lists
+            }
         },
+        chooseStudent(item){
+            this.student = item
+        }
     },
     created(){
 
@@ -82,15 +100,21 @@ export default Vue.extend({
     async mounted(){
         let res = await this.getClassList()
         if(res.code === 1){
-            this.student = this.className[0]
-            this.getStudentList({  //获取某一个班级的重点学生
-                cid: this.className[0].cid
+            this.cid = this.className[0].cid
+            let listRes = await this.getStudentList({  //获取某一个班级的重点学生
+                cid: this.cid
             })
-            // if(data.code === 1){
-            //     this.getGradeList({  //获取成绩列表
-            //     cid: this.studentLists[0].stuid
-            // })
-            // }
+            if(listRes.code === 1){
+                this.studentLists = listRes.lists
+                this.student = listRes.lists[0]
+            }
+           
+            let gradeRes = await this.getGradeList({  //获取班级的成绩列表
+                cid: this.cid
+            })
+            if(gradeRes.code ===1){
+                this.gradeList = gradeRes.lists
+            }
         }
     }
 })
